@@ -1,4 +1,3 @@
-
 from .constants import BOT_WELCOME_MESSAGE, PYTHON_QUESTION_LIST
 
 
@@ -29,24 +28,52 @@ def generate_bot_responses(message, session):
 
 
 def record_current_answer(answer, current_question_id, session):
-    '''
+    """
     Validates and stores the answer for the current question to django session.
-    '''
+    """
+
+    if current_question_id is None:
+        return False, "No question is currently being asked."
+
+    # Check if current_question_id is valid
+    if current_question_id < 0 or current_question_id >= len(PYTHON_QUESTION_LIST):
+        return False, "Invalid question ID."
+
+    # Validate the answer
+    correct_answer = PYTHON_QUESTION_LIST[current_question_id]["answer"]
+    if answer.strip().lower() == correct_answer.strip().lower():
+        # Store the answer in the session
+        session["answers"][current_question_id] = True
+    else:
+        session["answers"][current_question_id] = False
+
     return True, ""
 
 
 def get_next_question(current_question_id):
-    '''
+    """
     Fetches the next question from the PYTHON_QUESTION_LIST based on the current_question_id.
-    '''
-
-    return "dummy question", -1
+    """
+    next_question_id = current_question_id + 1
+    if next_question_id < len(PYTHON_QUESTION_LIST):
+        next_question = PYTHON_QUESTION_LIST[next_question_id]["question_text"]
+        return next_question, next_question_id
+    else:
+        return None, None
 
 
 def generate_final_response(session):
-    '''
+    """
     Creates a final result message including a score based on the answers
     by the user for questions in the PYTHON_QUESTION_LIST.
-    '''
+    """
+    num_correct_answers = sum(session.get("answers", {}).values())
+    total_questions = len(PYTHON_QUESTION_LIST)
+    score_percentage = (num_correct_answers / total_questions) * 100
 
-    return "dummy result"
+    final_response = f"You have completed the quiz!\n"
+    final_response += f"Total questions: {total_questions}\n"
+    final_response += f"Correct answers: {num_correct_answers}\n"
+    final_response += f"Score: {score_percentage:.2f}%\n"
+
+    return final_response
