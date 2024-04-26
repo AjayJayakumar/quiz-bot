@@ -28,7 +28,7 @@ def generate_bot_responses(message, session):
 
 
 def record_current_answer(answer, current_question_id, session):
-    """
+    
     """
     Validates and stores the answer for the current question to django session.
     """
@@ -53,7 +53,6 @@ def record_current_answer(answer, current_question_id, session):
 
 def get_next_question(current_question_id):
     """
-    """
     Fetches the next question from the PYTHON_QUESTION_LIST based on the current_question_id.
     """
     next_question_id = current_question_id + 1
@@ -66,10 +65,10 @@ def get_next_question(current_question_id):
 
 def generate_final_response(session):
     """
-    """
     Creates a final result message including a score based on the answers
     by the user for questions in the PYTHON_QUESTION_LIST.
     """
+
     num_correct_answers = sum(session.get("answers", {}).values())
     total_questions = len(PYTHON_QUESTION_LIST)
     score_percentage = (num_correct_answers / total_questions) * 100
